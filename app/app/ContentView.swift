@@ -1,8 +1,3 @@
-//
-//  ContentView.swift
-//  my1
-//
-
 import SwiftUI
 
 struct ContentView: View {
@@ -14,7 +9,7 @@ struct ContentView: View {
                 .tabItem {
                     Label("Рекомендации", systemImage: "photo")
                 }
-                .tag(0) 
+                .tag(0)
             
             OutfitsView()
                 .tabItem {
@@ -56,21 +51,83 @@ struct RecView: View {
 
 
 
+
+
 struct ProfileView: View {
+    @State private var user: User?
+    @State private var isLoggedOut = false
+    @State private var errorMessage = ""
+
     var body: some View {
-        VStack {
+        VStack(spacing: 20) {
+            if let user = user {
+                Text("👤 Имя:  \(user.name)")
+                    .font(.title2)
+                Text("📧 Почта:  \(user.email)")
+                    .foregroundColor(.gray)
+            } else if !errorMessage.isEmpty {
+                Text(errorMessage)
+                    .foregroundColor(.red)
+            } else {
+                ProgressView("Загрузка профиля...")
+            }
+
             Spacer()
-            Text("Личный кабинет")
-                .font(.largeTitle)
-                .padding()
-            Text("Здесь будет информация о пользователе")
-                .foregroundColor(.gray)
-            Spacer()
+
+            Button("Выйти из аккаунта") {
+                logout()
+            }
+            .padding()
+            .background(Color.red)
+            .foregroundColor(.white)
+            .cornerRadius(10)
+
+            NavigationLink(destination: LoginView(), isActive: $isLoggedOut) {
+                EmptyView()
+            }
         }
+        .padding()
         .navigationTitle("Профиль")
-        .navigationBarBackButtonHidden(false) // Показывает стандартную кнопку "назад"
+        .onAppear {
+            loadProfile()
+        }
+    }
+
+    func loadProfile() {
+        APIService.shared.fetchProfile { result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let fetchedUser):
+                    self.user = fetchedUser
+                case .failure(let error):
+                    self.errorMessage = "Ошибка загрузки профиля: \(error.localizedDescription)"
+                }
+            }
+        }
+    }
+
+    func logout() {
+        UserDefaults.standard.removeObject(forKey: "access_token")
+        isLoggedOut = true
     }
 }
+
+//
+//struct ProfileView: View {
+//    var body: some View {
+//        VStack {
+//            Spacer()
+//            Text("Личный кабинет")
+//                .font(.largeTitle)
+//                .padding()
+//            Text("Здесь будет информация о пользователе")
+//                .foregroundColor(.gray)
+//            Spacer()
+//        }
+//        .navigationTitle("Профиль")
+//        .navigationBarBackButtonHidden(false) // Показывает стандартную кнопку "назад"
+//    }
+//}
 
 
 
