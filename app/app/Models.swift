@@ -23,3 +23,5 @@ struct APIErrorDetail: Codable {
 struct APIErrorResponse: Codable {
     let detail: [APIErrorDetail]
 }
+
+
