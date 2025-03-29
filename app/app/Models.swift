@@ -1,7 +1,3 @@
-//
-//  Models.swift
-
-
 import Foundation
 
 struct User: Codable {
