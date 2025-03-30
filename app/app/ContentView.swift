@@ -1,5 +1,6 @@
 import SwiftUI
 import PhotosUI
+import UIKit
 
 struct ContentView: View {
     @State private var selectedTab = 0
@@ -28,15 +29,19 @@ struct ContentView: View {
     }
 }
 
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
 struct RecView: View {
     @State private var colorType: String = ""
-    @State private var images: [UIImage] = []
+    @State private var imageItems: [ImageItem] = []
     @State private var isLoading = true
-
-    let columns = [
-        GridItem(.flexible(), spacing: 10),
-        GridItem(.flexible(), spacing: 10)
-    ]
+    @State private var selectedImageItem: ImageItem? = nil
 
     var body: some View {
         NavigationView {
@@ -48,23 +53,26 @@ struct RecView: View {
                         Spacer()
                         Text("Здесь будут отображаться\nрекомендованные образы")
                             .foregroundColor(.gray)
+                            .multilineTextAlignment(.center)
                         Spacer()
                     }
                 } else {
                     ScrollView {
                         LazyVStack(spacing: 16) {
-                            ForEach(images, id: \.self) { image in
-                                Image(uiImage: image)
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .cornerRadius(12)
-                                    .padding(.horizontal)
+                            ForEach(imageItems, id: \.fileName) { item in
+                                Button(action: {
+                                    selectedImageItem = item
+                                }) {
+                                    Image(uiImage: item.image)
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .cornerRadius(12)
+                                        .padding(.horizontal)
+                                }
                             }
                         }
                         .padding(.top)
                     }
-
-
                 }
             }
             .navigationTitle("Рекомендации")
@@ -74,6 +82,9 @@ struct RecView: View {
                         .font(.title)
                 }
             )
+            .sheet(item: $selectedImageItem) { item in
+                ImageDetailView(imageItem: item)
+            }
         }
         .onAppear {
             loadColorTypeAndImages()
@@ -87,19 +98,19 @@ struct RecView: View {
                 switch result {
                 case .success(let response):
                     self.colorType = response.color_type.lowercased()
-                    self.images = loadImagesFromFolder(named: self.colorType)
+                    self.imageItems = loadImagesFromFolder(named: self.colorType)
                 case .failure(let error):
                     print("Ошибка загрузки color_type: \(error.localizedDescription)")
                     self.colorType = ""
-                    self.images = []
+                    self.imageItems = []
                 }
                 self.isLoading = false
             }
         }
     }
 
-    func loadImagesFromFolder(named folderName: String) -> [UIImage] {
-        var loadedImages: [UIImage] = []
+    func loadImagesFromFolder(named folderName: String) -> [ImageItem] {
+        var items: [ImageItem] = []
 
         guard let resourcePath = Bundle.main.resourcePath else { return [] }
         let folderPath = "\(resourcePath)/looks/\(folderName)"
@@ -111,16 +122,228 @@ struct RecView: View {
             for imageName in imagePaths {
                 let fullPath = "\(folderPath)/\(imageName)"
                 if let image = UIImage(contentsOfFile: fullPath) {
-                    loadedImages.append(image)
+                    let item = ImageItem(image: image, fileName: imageName)
+                    items.append(item)
                 }
             }
         } catch {
             print("Ошибка загрузки изображений из папки \(folderName): \(error.localizedDescription)")
         }
 
-        return loadedImages
+        return items
     }
 }
+
+
+
+
+struct ImageItem: Identifiable, Hashable {
+    let id = UUID()
+    let image: UIImage
+    let fileName: String
+}
+
+
+
+//// Модель изображения
+//struct ImageItem: Identifiable, Hashable {
+//    let id = UUID()
+//    let image: UIImage
+//    let fileName: String
+//}
+
+
+
+
+
+struct ImageDetailView: View {
+    let imageItem: ImageItem
+    @State private var products: [Product] = []
+
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 20) {
+                Image(uiImage: imageItem.image)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(maxWidth: 200)
+                    .cornerRadius(12)
+                    .padding()
+
+//                Text("Имя файла: \(imageItem.fileName)")
+//                    .font(.subheadline)
+//                    .foregroundColor(.gray)
+
+                if products.isEmpty {
+                    Text("Нет информации о продуктах")
+                        .foregroundColor(.secondary)
+                } else {
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Продукты в образе:")
+                            .font(.headline)
+
+                        ForEach(products) { product in
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("🛍 \(product.name)")
+                                    .font(.subheadline)
+                                    .bold()
+                                Text("🎨 Цвет: \(product.color)")
+                                Text("💰 Цена: \(product.price)")
+                                Text("🏬 Магазин: \(product.store)")
+                                Link("🔗 Перейти", destination: URL(string: product.url)!)
+                            }
+                            .padding()
+                            .background(Color(.systemGray6))
+                            .cornerRadius(10)
+                        }
+                    }
+                    .padding(.horizontal)
+                }
+
+                Spacer()
+            }
+        }
+        .onAppear {
+            loadProducts()
+        }
+    }
+
+    private func loadProducts() {
+        // Извлекаем ID из имени файла (например, "14.jpg" → 14)
+        let idString = imageItem.fileName.components(separatedBy: ".").first ?? ""
+        if let lookId = Int(idString) {
+            self.products = DatabaseManager.shared.fetchProducts(forLookId: lookId)
+        }
+    }
+}
+
+
+//// Экран с деталями изображения
+//struct ImageDetailView: View {
+//    let imageItem: ImageItem
+//
+//    var body: some View {
+//        VStack(spacing: 20) {
+//            Image(uiImage: imageItem.image)
+//                .resizable()
+//                .aspectRatio(contentMode: .fit)
+//                .cornerRadius(12)
+//                .padding()
+//
+//            Text("Имя файла:")
+//                .font(.headline)
+//
+//            Text(imageItem.fileName)
+//                .font(.subheadline)
+//                .foregroundColor(.gray)
+//                .multilineTextAlignment(.center)
+//
+//            Spacer()
+//        }
+//        .padding()
+//    }
+//}
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+//struct RecView: View {
+//    @State private var colorType: String = ""
+//    @State private var images: [UIImage] = []
+//    @State private var isLoading = true
+//
+//    let columns = [
+//        GridItem(.flexible(), spacing: 10),
+//        GridItem(.flexible(), spacing: 10)
+//    ]
+//
+//    var body: some View {
+//        NavigationView {
+//            Group {
+//                if isLoading {
+//                    ProgressView("Загрузка рекомендаций...")
+//                } else if colorType.isEmpty {
+//                    VStack {
+//                        Spacer()
+//                        Text("Здесь будут отображаться\nрекомендованные образы")
+//                            .foregroundColor(.gray)
+//                        Spacer()
+//                    }
+//                } else {
+//                    ScrollView {
+//                        LazyVStack(spacing: 16) {
+//                            ForEach(images, id: \.self) { image in
+//                                Image(uiImage: image)
+//                                    .resizable()
+//                                    .aspectRatio(contentMode: .fit)
+//                                    .cornerRadius(12)
+//                                    .padding(.horizontal)
+//                            }
+//                        }
+//                        .padding(.top)
+//                    }
+//
+//
+//                }
+//            }
+//            .navigationTitle("Рекомендации")
+//            .navigationBarItems(trailing:
+//                NavigationLink(destination: ProfileView()) {
+//                    Image(systemName: "person.circle")
+//                        .font(.title)
+//                }
+//            )
+//        }
+//        .onAppear {
+//            loadColorTypeAndImages()
+//        }
+//    }
+//
+//    func loadColorTypeAndImages() {
+//        isLoading = true
+//        APIService.shared.fetchColorType { result in
+//            DispatchQueue.main.async {
+//                switch result {
+//                case .success(let response):
+//                    self.colorType = response.color_type.lowercased()
+//                    self.images = loadImagesFromFolder(named: self.colorType)
+//                case .failure(let error):
+//                    print("Ошибка загрузки color_type: \(error.localizedDescription)")
+//                    self.colorType = ""
+//                    self.images = []
+//                }
+//                self.isLoading = false
+//            }
+//        }
+//    }
+//
+//    func loadImagesFromFolder(named folderName: String) -> [UIImage] {
+//        var loadedImages: [UIImage] = []
+//
+//        guard let resourcePath = Bundle.main.resourcePath else { return [] }
+//        let folderPath = "\(resourcePath)/looks/\(folderName)"
+//
+//        do {
+//            let fileManager = FileManager.default
+//            let imagePaths = try fileManager.contentsOfDirectory(atPath: folderPath)
+//
+//            for imageName in imagePaths {
+//                let fullPath = "\(folderPath)/\(imageName)"
+//                if let image = UIImage(contentsOfFile: fullPath) {
+//                    loadedImages.append(image)
+//                }
+//            }
+//        } catch {
+//            print("Ошибка загрузки изображений из папки \(folderName): \(error.localizedDescription)")
+//        }
+//
+//        return loadedImages
+//    }
+//}
 
 
 

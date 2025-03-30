@@ -1,4 +1,14 @@
 import Foundation
+import GRDB
+
+struct Product: FetchableRecord, Decodable, Identifiable {
+    let id: Int
+    let name: String
+    let color: String
+    let price: String
+    let store: String
+    let url: String
+}
 
 struct User: Codable {
     let id: Int
