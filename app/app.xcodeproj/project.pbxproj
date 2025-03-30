@@ -19,6 +19,7 @@
 		B7B38E832D9854FE00930275 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7B38E822D9854FE00930275 /* Models.swift */; };
 		B7B38E852D98552E00930275 /* reg&entr.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7B38E842D98552E00930275 /* reg&entr.swift */; };
 		B7B38E872D98558000930275 /* APIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7B38E862D98558000930275 /* APIService.swift */; };
+		B7F281082D99C2BE00A08835 /* test.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7F281072D99C2BE00A08835 /* test.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,6 +55,7 @@
 		B7B38E822D9854FE00930275 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		B7B38E842D98552E00930275 /* reg&entr.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "reg&entr.swift"; sourceTree = "<group>"; };
 		B7B38E862D98558000930275 /* APIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIService.swift; sourceTree = "<group>"; };
+		B7F281072D99C2BE00A08835 /* test.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = test.swift; path = ../../../../../Downloads/checkerr/checkerr/test.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -106,6 +108,7 @@
 			children = (
 				B79392482D998632000D1E8D /* looks */,
 				B79392442D997322000D1E8D /* wardrobe.swift */,
+				B7F281072D99C2BE00A08835 /* test.swift */,
 				B7B38E582D9853FC00930275 /* appApp.swift */,
 				B7B38E822D9854FE00930275 /* Models.swift */,
 				B7B38E842D98552E00930275 /* reg&entr.swift */,
@@ -279,6 +282,7 @@
 				B7B38E852D98552E00930275 /* reg&entr.swift in Sources */,
 				B7B38E592D9853FC00930275 /* appApp.swift in Sources */,
 				B79392452D997322000D1E8D /* wardrobe.swift in Sources */,
+				B7F281082D99C2BE00A08835 /* test.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

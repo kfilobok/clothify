@@ -143,6 +143,35 @@ class APIService {
             }
         }.resume()
     }
+    
+    func fetchColorType(completion: @escaping (Result<ColorTypeResponse, Error>) -> Void) {
+        guard let url = URL(string: "\(baseURL)/api/users/me/colortype") else { return }
+        guard let token = UserDefaults.standard.string(forKey: "access_token") else {
+            print("Нет токена")
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+
+            guard let data = data else { return }
+
+            do {
+                let result = try JSONDecoder().decode(ColorTypeResponse.self, from: data)
+                completion(.success(result))
+            } catch {
+                completion(.failure(error))
+            }
+        }.resume()
+    }
+
 
 
 }

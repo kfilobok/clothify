@@ -28,20 +28,44 @@ struct ContentView: View {
     }
 }
 
-
-
-
-
-
-
 struct RecView: View {
+    @State private var colorType: String = ""
+    @State private var images: [UIImage] = []
+    @State private var isLoading = true
+
+    let columns = [
+        GridItem(.flexible(), spacing: 10),
+        GridItem(.flexible(), spacing: 10)
+    ]
+
     var body: some View {
         NavigationView {
-            VStack {
-                Spacer()
-                Text("Здесь будут отображаться\nрекомендованные образы")
-                    .foregroundColor(.gray)
-                Spacer()
+            Group {
+                if isLoading {
+                    ProgressView("Загрузка рекомендаций...")
+                } else if colorType.isEmpty {
+                    VStack {
+                        Spacer()
+                        Text("Здесь будут отображаться\nрекомендованные образы")
+                            .foregroundColor(.gray)
+                        Spacer()
+                    }
+                } else {
+                    ScrollView {
+                        LazyVStack(spacing: 16) {
+                            ForEach(images, id: \.self) { image in
+                                Image(uiImage: image)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .cornerRadius(12)
+                                    .padding(.horizontal)
+                            }
+                        }
+                        .padding(.top)
+                    }
+
+
+                }
             }
             .navigationTitle("Рекомендации")
             .navigationBarItems(trailing:
@@ -51,8 +75,76 @@ struct RecView: View {
                 }
             )
         }
+        .onAppear {
+            loadColorTypeAndImages()
+        }
+    }
+
+    func loadColorTypeAndImages() {
+        isLoading = true
+        APIService.shared.fetchColorType { result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let response):
+                    self.colorType = response.color_type.lowercased()
+                    self.images = loadImagesFromFolder(named: self.colorType)
+                case .failure(let error):
+                    print("Ошибка загрузки color_type: \(error.localizedDescription)")
+                    self.colorType = ""
+                    self.images = []
+                }
+                self.isLoading = false
+            }
+        }
+    }
+
+    func loadImagesFromFolder(named folderName: String) -> [UIImage] {
+        var loadedImages: [UIImage] = []
+
+        guard let resourcePath = Bundle.main.resourcePath else { return [] }
+        let folderPath = "\(resourcePath)/looks/\(folderName)"
+
+        do {
+            let fileManager = FileManager.default
+            let imagePaths = try fileManager.contentsOfDirectory(atPath: folderPath)
+
+            for imageName in imagePaths {
+                let fullPath = "\(folderPath)/\(imageName)"
+                if let image = UIImage(contentsOfFile: fullPath) {
+                    loadedImages.append(image)
+                }
+            }
+        } catch {
+            print("Ошибка загрузки изображений из папки \(folderName): \(error.localizedDescription)")
+        }
+
+        return loadedImages
     }
 }
+
+
+
+
+
+//struct RecView: View {
+//    var body: some View {
+//        NavigationView {
+//            VStack {
+//                Spacer()
+//                Text("Здесь будут отображаться\nрекомендованные образы")
+//                    .foregroundColor(.gray)
+//                Spacer()
+//            }
+//            .navigationTitle("Рекомендации")
+//            .navigationBarItems(trailing:
+//                NavigationLink(destination: ProfileView()) {
+//                    Image(systemName: "person.circle")
+//                        .font(.title)
+//                }
+//            )
+//        }
+//    }
+//}
 
 
 

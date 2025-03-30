@@ -43,4 +43,11 @@ struct TestResultResponse: Codable {
     let avoid_colors: [String]
 }
 
+struct ColorTypeResponse: Codable {
+    let color_type: String
+    let description: String
+    let recommended_colors: [String]
+    let avoid_colors: [String]
+}
+
 
