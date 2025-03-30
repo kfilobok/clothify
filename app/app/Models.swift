@@ -25,3 +25,22 @@ struct APIErrorResponse: Codable {
 }
 
 
+
+
+struct TestAnswer: Codable {
+    let question_id: Int
+    let selected_option_id: Int
+}
+
+struct TestResultRequest: Codable {
+    let answers: [TestAnswer]
+}
+
+struct TestResultResponse: Codable {
+    let color_type: String
+    let description: String
+    let recommended_colors: [String]
+    let avoid_colors: [String]
+}
+
+

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		B79392452D997322000D1E8D /* wardrobe.swift in Sources */ = {isa = PBXBuildFile; fileRef = B79392442D997322000D1E8D /* wardrobe.swift */; };
+		B79392492D998632000D1E8D /* looks in Resources */ = {isa = PBXBuildFile; fileRef = B79392482D998632000D1E8D /* looks */; };
 		B7B38E592D9853FC00930275 /* appApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7B38E582D9853FC00930275 /* appApp.swift */; };
 		B7B38E5B2D9853FC00930275 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7B38E5A2D9853FC00930275 /* ContentView.swift */; };
 		B7B38E5D2D9853FD00930275 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B7B38E5C2D9853FD00930275 /* Assets.xcassets */; };
@@ -39,6 +40,7 @@
 
 /* Begin PBXFileReference section */
 		B79392442D997322000D1E8D /* wardrobe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = wardrobe.swift; sourceTree = "<group>"; };
+		B79392482D998632000D1E8D /* looks */ = {isa = PBXFileReference; lastKnownFileType = folder; name = looks; path = ../../looks; sourceTree = "<group>"; };
 		B7B38E552D9853FC00930275 /* app.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = app.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B7B38E582D9853FC00930275 /* appApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = appApp.swift; sourceTree = "<group>"; };
 		B7B38E5A2D9853FC00930275 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -102,6 +104,7 @@
 		B7B38E572D9853FC00930275 /* app */ = {
 			isa = PBXGroup;
 			children = (
+				B79392482D998632000D1E8D /* looks */,
 				B79392442D997322000D1E8D /* wardrobe.swift */,
 				B7B38E582D9853FC00930275 /* appApp.swift */,
 				B7B38E822D9854FE00930275 /* Models.swift */,
@@ -243,6 +246,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B79392492D998632000D1E8D /* looks in Resources */,
 				B7B38E602D9853FD00930275 /* Preview Assets.xcassets in Resources */,
 				B7B38E5D2D9853FD00930275 /* Assets.xcassets in Resources */,
 			);

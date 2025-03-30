@@ -71,6 +71,10 @@ class APIService {
             }
         }.resume()
     }
+    
+  
+
+    
     func fetchProfile(completion: @escaping (Result<User, Error>) -> Void) {
         guard let url = URL(string: "\(baseURL)/api/auth/profile") else { return }
         guard let token = UserDefaults.standard.string(forKey: "access_token") else {
@@ -87,8 +91,11 @@ class APIService {
                 completion(.failure(error))
                 return
             }
+//            print(String(data: data, encoding: .utf8) ?? "Нет данных")
 
             guard let data = data else { return }
+
+
 
             do {
                 let user = try JSONDecoder().decode(User.self, from: data)
@@ -98,5 +105,44 @@ class APIService {
             }
         }.resume()
     }
+    
+    func sendTestResults(answers: [TestAnswer], completion: @escaping (Result<TestResultResponse, Error>) -> Void) {
+        guard let url = URL(string: "\(baseURL)/api/colortype/results") else { return }
+        guard let token = UserDefaults.standard.string(forKey: "access_token") else {
+            print("Нет токена")
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+
+        let requestBody = TestResultRequest(answers: answers)
+
+        do {
+            request.httpBody = try JSONEncoder().encode(requestBody)
+        } catch {
+            completion(.failure(error))
+            return
+        }
+
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+
+            guard let data = data else { return }
+
+            do {
+                let result = try JSONDecoder().decode(TestResultResponse.self, from: data)
+                completion(.success(result))
+            } catch {
+                completion(.failure(error))
+            }
+        }.resume()
+    }
+
 
 }

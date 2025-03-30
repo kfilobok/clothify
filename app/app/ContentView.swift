@@ -30,6 +30,10 @@ struct ContentView: View {
 
 
 
+
+
+
+
 struct RecView: View {
     var body: some View {
         NavigationView {
@@ -53,7 +57,6 @@ struct RecView: View {
 
 
 
-
 struct ProfileView: View {
     @State private var user: User?
     @State private var isLoggedOut = false
@@ -62,29 +65,71 @@ struct ProfileView: View {
     var body: some View {
         VStack(spacing: 20) {
             if let user = user {
-                Text("👤 Имя:  \(user.name)")
-                    .font(.title2)
-                Text("📧 Почта:  \(user.email)")
-                    .foregroundColor(.gray)
+                // Основная информация
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("👤 \(user.name)")
+//                        .font(.title2)
+//                        .bold()
+                    Text("📧 \(user.email)")
+//                        .foregroundColor(.gray)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding()
+
+                // Разделитель
+                Divider()
+                    .background(Color.gray)
+
+                // Секция "Контакты"
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("Контакты")
+                        .font(.headline)
+                        .padding(.bottom, 5)
+
+                    HStack {
+                        Image(systemName: "envelope")
+                            .foregroundColor(.blue)
+                        Text("example@gmail.com")
+                            .foregroundColor(.blue)
+                    }
+
+                    HStack {
+                        Image(systemName: "paperplane")
+                            .foregroundColor(.purple)
+                        Text("@exampleTelegram")
+                            .foregroundColor(.purple)
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading) // Выровнено по левому краю
+                .padding()
+
+                Spacer()
+
+                // Кнопка выхода
+                Button(action: {
+                    logout()
+                }) {
+                    Text("Выйти из аккаунта")
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.red)
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                }
+                .padding([.leading, .trailing, .bottom])
+
+                // Переход на экран входа
+                NavigationLink(destination: LoginView(), isActive: $isLoggedOut) {
+                    EmptyView()
+                }
             } else if !errorMessage.isEmpty {
                 Text(errorMessage)
                     .foregroundColor(.red)
+                    .padding()
+                Spacer()
             } else {
                 ProgressView("Загрузка профиля...")
-            }
-
-            Spacer()
-
-            Button("Выйти из аккаунта") {
-                logout()
-            }
-            .padding()
-            .background(Color.red)
-            .foregroundColor(.white)
-            .cornerRadius(10)
-
-            NavigationLink(destination: LoginView(), isActive: $isLoggedOut) {
-                EmptyView()
+                Spacer()
             }
         }
         .padding()
@@ -112,6 +157,68 @@ struct ProfileView: View {
         isLoggedOut = true
     }
 }
+
+
+
+
+//struct ProfileView: View {
+//    @State private var user: User?
+//    @State private var isLoggedOut = false
+//    @State private var errorMessage = ""
+//
+//    var body: some View {
+//        VStack(spacing: 20) {
+//            if let user = user {
+//                Text("👤 Имя:  \(user.name)")
+//                    .font(.title2)
+//                Text("📧 Почта:  \(user.email)")
+//                    .foregroundColor(.gray)
+//            } else if !errorMessage.isEmpty {
+//                Text(errorMessage)
+//                    .foregroundColor(.red)
+//            } else {
+//                ProgressView("Загрузка профиля...")
+//            }
+//
+//            Spacer()
+//
+//            Button("Выйти из аккаунта") {
+//                logout()
+//            }
+//            .padding()
+//            .background(Color.red)
+//            .foregroundColor(.white)
+//            .cornerRadius(10)
+//
+//            NavigationLink(destination: LoginView(), isActive: $isLoggedOut) {
+//                EmptyView()
+//            }
+//        }
+//        .padding()
+//        .navigationTitle("Профиль")
+//        .onAppear {
+//            loadProfile()
+//        }
+//    }
+//
+//    func loadProfile() {
+//        APIService.shared.fetchProfile { result in
+//            DispatchQueue.main.async {
+//                switch result {
+//                case .success(let fetchedUser):
+//                    self.user = fetchedUser
+//                case .failure(let error):
+//                    self.errorMessage = "Ошибка загрузки профиля: \(error.localizedDescription)"
+//                }
+//            }
+//        }
+//    }
+//
+//    func logout() {
+//        UserDefaults.standard.removeObject(forKey: "access_token")
+//        isLoggedOut = true
+//    }
+//}
 
 //
 //struct ProfileView: View {

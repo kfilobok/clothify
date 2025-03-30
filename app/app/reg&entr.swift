@@ -39,9 +39,13 @@ struct RegisterView: View {
             .foregroundColor(.white)
             .cornerRadius(10)
 
-            NavigationLink(destination: ContentView(), isActive: $isRegistered) {
+//            NavigationLink(destination: ContentView(), isActive: $isRegistered) {
+//                EmptyView()
+//            }
+            NavigationLink(destination: TestView(), isActive: $isRegistered) {
                 EmptyView()
             }
+
         }
         .padding()
     }
