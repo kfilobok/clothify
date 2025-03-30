@@ -361,9 +361,17 @@ struct ConfirmationView: View {
         ClothingColor(name: "Чёрный", color: .black),
         ClothingColor(name: "Белый", color: .white),
         ClothingColor(name: "Серый", color: .gray),
-        ClothingColor(name: "Красный", color: .red),
         ClothingColor(name: "Синий", color: .blue),
-        ClothingColor(name: "Жёлтый", color: .yellow)
+        ClothingColor(name: "Голубой", color: .cyan),
+        ClothingColor(name: "Зеленый", color: .green),
+        ClothingColor(name: "Жёлтый", color: .yellow),
+        //ClothingColor(name: "Оливковый", color: .green),
+        ClothingColor(name: "Бежевый", color: Color(red: 0.99, green: 0.96, blue: 0.86)),
+        ClothingColor(name: "Коричневый", color: .brown),
+        ClothingColor(name: "Фиолетовый", color: .purple),
+        ClothingColor(name: "Красный", color: .red),
+        ClothingColor(name: "Розовый", color: Color(red: 0.98, green: 0.82, blue: 0.9)),
+        ClothingColor(name: "Оранжевый", color: .orange)
     ]
     
     // Разбиваем цвета на группы по 3 для 3 колонок
@@ -375,10 +383,10 @@ struct ConfirmationView: View {
     
     var body: some View {
         VStack(spacing: 16) {
-            Text("Уже добавляем эту вещь в ваш гардероб")
-                .font(.title2)
-                .multilineTextAlignment(.center)
-                .padding(.top, 20)
+//            Text("Уже добавляем эту вещь в ваш гардероб")
+//                .font(.title2)
+//                .multilineTextAlignment(.center)
+//                .padding(.top, 20)
             
             if let image = image {
                 Image(uiImage: image)
@@ -396,9 +404,9 @@ struct ConfirmationView: View {
                     .padding(.horizontal, 24)
                 
                 // Три колонки с чипсами
-                VStack(spacing: 10) {
+                VStack(spacing: 5) {
                     ForEach(colorColumns, id: \.self) { row in
-                        HStack(spacing: 10) {
+                        HStack(spacing: 5) {
                             ForEach(row) { option in
                                 ColorChip(
                                     color: option,
@@ -406,7 +414,8 @@ struct ConfirmationView: View {
                                 ) {
                                     selectedColor = option
                                 }
-                                .frame(maxWidth: .infinity)
+                                
+                                .frame(maxWidth: .infinity, alignment: .leading)
                             }
                             
                             // Добавляем пустые View для выравнивания, если в строке меньше 3 элементов
@@ -419,7 +428,7 @@ struct ConfirmationView: View {
                         }
                     }
                 }
-                .padding(.horizontal, 16)
+                .padding(.horizontal, 5)
             }
             
             Spacer()
@@ -446,7 +455,6 @@ struct ConfirmationView: View {
     }
 }
 
-// Горизонтальный чипс (круг + текст рядом)
 struct ColorChip: View {
     let color: ClothingColor
     let isSelected: Bool
@@ -468,7 +476,7 @@ struct ColorChip: View {
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 8)
-            .frame(maxWidth: .infinity)
+            .frame(maxWidth: .infinity, alignment: .leading) // ← Выравнивание по левому краю
             .background(
                 isSelected ? Color.blue.opacity(0.1) : Color.gray.opacity(0.05)
             )
@@ -479,8 +487,45 @@ struct ColorChip: View {
             )
         }
         .foregroundColor(.primary)
+        .frame(maxWidth: .infinity, alignment: .leading) // ← Дополнительное выравнивание
     }
 }
+
+//// Горизонтальный чипс (круг + текст рядом)
+//struct ColorChip: View {
+//    let color: ClothingColor
+//    let isSelected: Bool
+//    let action: () -> Void
+//
+//    var body: some View {
+//        Button(action: action) {
+//            HStack(spacing: 6) {
+//                Circle()
+//                    .fill(color.color)
+//                    .frame(width: 20, height: 20)
+//                    .overlay(
+//                        Circle()
+//                            .stroke(isSelected ? Color.blue : Color.gray.opacity(0.3), lineWidth: 2)
+//                    )
+//
+//                Text(color.name)
+//                    .font(.system(size: 14))
+//            }
+//            .padding(.horizontal, 12)
+//            .padding(.vertical, 8)
+//            .frame(maxWidth: .infinity)
+//            .background(
+//                isSelected ? Color.blue.opacity(0.1) : Color.gray.opacity(0.05)
+//            )
+//            .cornerRadius(20)
+//            .overlay(
+//                RoundedRectangle(cornerRadius: 20)
+//                    .stroke(isSelected ? Color.blue : Color.gray.opacity(0.2), lineWidth: 1)
+//            )
+//        }
+//        .foregroundColor(.primary)
+//    }
+//}
 
 //struct ConfirmationView: View {
 //    @Binding var isPresented: Bool
