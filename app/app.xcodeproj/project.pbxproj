@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B79392452D997322000D1E8D /* wardrobe.swift in Sources */ = {isa = PBXBuildFile; fileRef = B79392442D997322000D1E8D /* wardrobe.swift */; };
 		B7B38E592D9853FC00930275 /* appApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7B38E582D9853FC00930275 /* appApp.swift */; };
 		B7B38E5B2D9853FC00930275 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7B38E5A2D9853FC00930275 /* ContentView.swift */; };
 		B7B38E5D2D9853FD00930275 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B7B38E5C2D9853FD00930275 /* Assets.xcassets */; };
@@ -37,6 +38,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		B79392442D997322000D1E8D /* wardrobe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = wardrobe.swift; sourceTree = "<group>"; };
 		B7B38E552D9853FC00930275 /* app.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = app.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B7B38E582D9853FC00930275 /* appApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = appApp.swift; sourceTree = "<group>"; };
 		B7B38E5A2D9853FC00930275 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -80,6 +82,7 @@
 		B7B38E4C2D9853FC00930275 = {
 			isa = PBXGroup;
 			children = (
+				B79392442D997322000D1E8D /* wardrobe.swift */,
 				B7B38E572D9853FC00930275 /* app */,
 				B7B38E682D9853FD00930275 /* appTests */,
 				B7B38E722D9853FD00930275 /* appUITests */,
@@ -271,6 +274,7 @@
 				B7B38E5B2D9853FC00930275 /* ContentView.swift in Sources */,
 				B7B38E852D98552E00930275 /* reg&entr.swift in Sources */,
 				B7B38E592D9853FC00930275 /* appApp.swift in Sources */,
+				B79392452D997322000D1E8D /* wardrobe.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
