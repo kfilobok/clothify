@@ -163,7 +163,135 @@ class DatabaseManager {
     }
 
 
+//    func calculateOwnedItemRatio(forLookId lookId: Int) -> Double {
+//        do {
+//            return try dbQueue?.read { db in
+//                // 1. Получаем строку items из таблицы looks
+//                let row = try Row.fetchOne(db, sql: "SELECT items FROM looks WHERE id = ?", arguments: [lookId])
+//                guard let itemsString: String = row?["items"] else {
+//                    print("⚠️ Не найдено поле items для look id \(lookId)")
+//                    return 0.0
+//                }
+//
+//                // 2. Преобразуем строку в массив ID
+//                let itemIds = itemsString
+//                    .split(separator: ",")
+//                    .compactMap { Int($0.trimmingCharacters(in: .whitespaces)) }
+//
+////                print(itemIds)
+//                let itemsAmount = itemIds.count
+//                if itemsAmount == 0 {
+//                    print("⚠️ Образ не содержит продуктов")
+//                    return 0.0
+//                }
+//
+//                // 3. Получаем type и color всех продуктов из таблицы products
+//                let placeholders = itemIds.map { _ in "?" }.joined(separator: ",")
+//                let sql = "SELECT type, color FROM products WHERE id IN (\(placeholders))"
+//                let productRows = try Row.fetchAll(db, sql: sql, arguments: StatementArguments(itemIds))
+//
+//                // 4. Сохраняем пары (type, color) в список
+//                var productTypeColorPairs: [(String, String)] = productRows.compactMap {
+//                    guard let type: String = $0["type"], let color: String = $0["color"] else { return nil }
+//                    return (type.lowercased(), color.lowercased())
+//                }
+////                print(productTypeColorPairs)
+//
+//                // 5. Загружаем все вещи из гардероба
+//                let wardrobeItems = try Row.fetchAll(db, sql: "SELECT type, color FROM wardrobe")
+//
+//                var existing = 0
+//
+//                for wardrobeRow in wardrobeItems {
+//                    guard let wardrobeType: String = wardrobeRow["type"],
+//                          let wardrobeColor: String = wardrobeRow["color"] else { continue }
+////                    print(wardrobeType, wardrobeColor)
+//                    // Ищем совпадение
+//                    if let index = productTypeColorPairs.firstIndex(where: {
+//                        $0.0 == wardrobeType.lowercased() && $0.1 == wardrobeColor.lowercased()
+//                    }) {
+//                        // Удаляем найденный элемент, чтобы не засчитывать его повторно
+//                        productTypeColorPairs.remove(at: index)
+//                        existing += 1
+//                    }
+//                }
+//
+//                return Double(existing) / Double(itemsAmount)
+//
+//            } ?? 0.0
+//        } catch {
+//            print("❌ Ошибка при расчёте доли вещей: \(error)")
+//            return 0.0
+//        }
+//    }
 
+    func calculateOwnedItemRatio(forLookId lookId: Int) -> Double {
+        do {
+            return try dbQueue?.read { db in
+                // 1. Получаем строку items из таблицы looks
+                let row = try Row.fetchOne(db, sql: "SELECT items FROM looks WHERE id = ?", arguments: [lookId])
+                guard let itemsString: String = row?["items"] else {
+                    print("⚠️ Не найдено поле items для look id \(lookId)")
+                    return 0.0
+                }
 
+                // 2. Преобразуем строку в массив ID
+                let itemIds = itemsString
+                    .split(separator: ",")
+                    .compactMap { Int($0.trimmingCharacters(in: .whitespaces)) }
+
+                let itemsAmount = itemIds.count
+                if itemsAmount == 0 {
+                    print("⚠️ Образ не содержит продуктов")
+                    return 0.0
+                }
+
+                // 3. Получаем type и color всех продуктов из таблицы products
+                let placeholders = itemIds.map { _ in "?" }.joined(separator: ",")
+                let sql = "SELECT type, color FROM products WHERE id IN (\(placeholders))"
+                let productRows = try Row.fetchAll(db, sql: sql, arguments: StatementArguments(itemIds))
+
+                // 4. Сохраняем пары (type, color) в список
+                var productTypeColorPairs: [(String, String)] = productRows.compactMap {
+                    guard let type: String = $0["type"],
+                          let color: String = $0["color"] else { return nil }
+
+                    let cleanedType = type.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+                    let cleanedColor = color.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+                    return (cleanedType, cleanedColor)
+                }
+
+                // 5. Загружаем все вещи из гардероба
+                let wardrobeItems = try Row.fetchAll(db, sql: "SELECT type, color FROM wardrobe")
+
+                var existing = 0
+
+                for wardrobeRow in wardrobeItems {
+                    guard let wardrobeType: String = wardrobeRow["type"],
+                          let wardrobeColor: String = wardrobeRow["color"] else { continue }
+
+                    let cleanedWardrobeType = wardrobeType.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+                    let cleanedWardrobeColor = wardrobeColor.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+
+                    // Ищем совпадение
+                    if let index = productTypeColorPairs.firstIndex(where: {
+                        $0.0 == cleanedWardrobeType && $0.1 == cleanedWardrobeColor
+                    }) {
+                        // Удаляем найденный элемент, чтобы не засчитывать его повторно
+                        productTypeColorPairs.remove(at: index)
+                        existing += 1
+                    }
+                }
+
+                return Double(existing) / Double(itemsAmount)
+
+            } ?? 0.0
+        } catch {
+            print("❌ Ошибка при расчёте доли вещей: \(error)")
+            return 0.0
+        }
+    }
+
+    
 
 }

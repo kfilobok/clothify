@@ -162,6 +162,13 @@ class APIService {
             }
 
             guard let data = data else { return }
+//            print(data)
+//            if let responseString = String(data: data, encoding: .utf8) {
+//                print("Ответ от сервера: \(responseString)")
+//            } else {
+//                print("Не удалось преобразовать данные в строку")
+//            }
+
 
             do {
                 let result = try JSONDecoder().decode(ColorTypeResponse.self, from: data)

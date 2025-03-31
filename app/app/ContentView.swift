@@ -56,16 +56,33 @@ struct RecView: View {
                     ScrollView {
                         LazyVStack(spacing: 16) {
                             ForEach(imageItems, id: \.fileName) { item in
+                                let idString = item.fileName.components(separatedBy: ".").first ?? ""
+                                let lookId = Int(idString) ?? -1
+
+                                let value = percentile(for: lookId)
+//                                let value = percentile()
+                                let circleColor = colorForPercentile(value)
+            
+
                                 Button(action: {
                                     selectedImageItem = item
                                 }) {
-                                    Image(uiImage: item.image)
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fit)
-                                        .cornerRadius(12)
-                                        .padding(.horizontal)
+                                    ZStack(alignment: .topTrailing) {
+                                        Image(uiImage: item.image)
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fit)
+                                            .cornerRadius(12)
+                                            .padding(.horizontal)
+
+                                        Circle()
+                                            .fill(circleColor)
+                                            .frame(width: 32, height: 32)
+                                            .padding(8)
+                                            .offset(x: -16)
+                                    }
                                 }
                             }
+
                         }
                         .padding(.top)
                     }
@@ -89,6 +106,45 @@ struct RecView: View {
             loadColorTypeAndImages()
         }
     }
+    
+    func percentile(for lookId: Int) -> Double {
+        let ratio = DatabaseManager.shared.calculateOwnedItemRatio(forLookId: lookId)
+        let thresholds: [Double] = [1.0, 0.5, 1.0/3.0, 0.0]
+
+        // Сортируем по убыванию, чтобы найти наименьшее ближайшее сверху или равное
+        let sorted = thresholds.sorted(by: >)
+//        print(lookId, ratio)
+        
+
+        for value in sorted {
+            if ratio >= value {
+                return value
+            }
+        }
+
+        return 0.0
+    }
+
+    
+//    func percentile() -> Double {
+//        let values: [Double] = [1.0, 0.5, 1.0/3.0, 0.0]
+//        return values.randomElement()!
+//    }
+
+    
+    func colorForPercentile(_ value: Double) -> Color {
+        switch value {
+        case 1.0:
+            return .green
+        case 0.5:
+            return .yellow
+        case 1.0/3.0:
+            return .orange
+        default:
+            return .red
+        }
+    }
+
 
     func loadColorTypeAndImages() {
         isLoading = true
@@ -99,6 +155,7 @@ struct RecView: View {
                     self.colorType = response.color_type.lowercased()
                     self.imageItems = loadImagesFromFolder(named: self.colorType)
                 case .failure(let error):
+//                    print("Ответ от сервера: \(result)")
                     print("Ошибка загрузки color_type: \(error.localizedDescription)")
                     self.colorType = ""
                     self.imageItems = []

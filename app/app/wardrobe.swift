@@ -24,13 +24,13 @@ struct ConfirmationView: View {
     @Binding var selectedType: ClothingType?
 
     private let colorOptions: [ClothingColor] = [
-        ClothingColor(name: "чёрный", color: .black),
+        ClothingColor(name: "черный", color: .black),
         ClothingColor(name: "белый", color: .white),
         ClothingColor(name: "серый", color: .gray),
         ClothingColor(name: "синий", color: .blue),
         ClothingColor(name: "голубой", color: .cyan),
         ClothingColor(name: "зелёный", color: .green),
-        ClothingColor(name: "жёлтый", color: .yellow),
+        ClothingColor(name: "желтый", color: .yellow),
         ClothingColor(name: "бежевый", color: Color(red: 0.99, green: 0.96, blue: 0.86)),
         ClothingColor(name: "коричневый", color: .brown),
         ClothingColor(name: "фиолетовый", color: .purple),

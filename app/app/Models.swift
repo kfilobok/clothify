@@ -113,13 +113,13 @@ struct WardrobeItem: Codable, FetchableRecord, PersistableRecord, Identifiable, 
 //    let type: String
 //    let imagePath: String
 //    let createdAt: Date
-//    
+//
 //    enum CodingKeys: String, CodingKey {
 //        case id, color, type
 //        case imagePath = "image_path"
 //        case createdAt = "created_at"
 //    }
-//    
+//
 //    func getImage() -> UIImage? {
 //        let documentsURL = FileManager.default.urls(
 //            for: .documentDirectory,
