@@ -19,24 +19,19 @@ class DatabaseManager {
                 create: true
             )
             let dbURL = documentsURL.appendingPathComponent("app.db")
+            copyDatabaseIfNeeded()
 
-            // Копируем базу из Bundle в Documents, если её ещё нет
-            if !fileManager.fileExists(atPath: dbURL.path) {
-                if let bundleDBURL = Bundle.main.url(forResource: "app", withExtension: "db") {
-                    try fileManager.copyItem(at: bundleDBURL, to: dbURL)
-                    print("✅ База данных скопирована в Documents")
-                } else {
-                    print("❌ Не удалось найти app.db в Bundle")
-                }
-            }
+
 
             // Открываем соединение с базой
             dbQueue = try DatabaseQueue(path: dbURL.path)
+            createWardrobeTableIfNeeded()
             print("📦 База подключена: \(dbURL.path)")
 
         } catch {
             print("❌ Ошибка при настройке базы данных: \(error)")
         }
+        
         
         printAllTables()
 
@@ -84,5 +79,91 @@ class DatabaseManager {
             print("❌ Ошибка при получении списка таблиц: \(error)")
         }
     }
+    
+    
+    func copyDatabaseIfNeeded() {
+        let fileManager = FileManager.default
+
+        // Путь к файлу в Bundle
+        guard let bundleURL = Bundle.main.url(forResource: "app", withExtension: "db") else {
+            print("❌ Не удалось найти app.db в Bundle")
+            return
+        }
+
+        // Путь к файлу в Documents
+        let documentsURL = try! fileManager.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+        let destinationURL = documentsURL.appendingPathComponent("app.db")
+
+        // Проверка: если файл уже есть — не копируем
+        if fileManager.fileExists(atPath: destinationURL.path) {
+            print("✅ База уже существует в Documents: \(destinationURL.path)")
+            return
+        }
+
+        do {
+            try fileManager.copyItem(at: bundleURL, to: destinationURL)
+            print("✅ База успешно скопирована в Documents: \(destinationURL.path)")
+        } catch {
+            print("❌ Ошибка при копировании базы: \(error)")
+        }
+    }
+    
+    private func createWardrobeTableIfNeeded() {
+        do {
+            try dbQueue?.write { db in
+                try db.create(table: "wardrobe", ifNotExists: true) { t in
+                    t.autoIncrementedPrimaryKey("id")
+                    t.column("color", .text).notNull()
+                    t.column("type", .text).notNull()
+                    t.column("image_path", .text).notNull()
+                    t.column("created_at", .datetime).notNull()
+                }
+            }
+            print("✅ Таблица wardrobe создана (если её не было)")
+        } catch {
+            print("❌ Ошибка создания таблицы wardrobe: \(error)")
+        }
+    }
+    
+    func insertWardrobeItem(_ item: WardrobeItem) {
+        do {
+            try dbQueue?.write { db in
+                try item.insert(db)
+            }
+            print("✅ Вещь добавлена в гардероб")
+        } catch {
+            print("❌ Ошибка при добавлении вещи: \(error)")
+        }
+    }
+
+    func fetchAllWardrobeItems() -> [WardrobeItem] {
+        do {
+            return try dbQueue?.read { db in
+                try WardrobeItem.fetchAll(db)
+            } ?? []
+        } catch {
+            print("❌ Ошибка при загрузке гардероба: \(error)")
+            return []
+        }
+    }
+
+    func deleteWardrobeItem(_ item: WardrobeItem) {
+        guard let dbQueue2 = dbQueue else {
+            print("Ошибка: dbQueue не инициализирован")
+            return
+        }
+
+        do {
+            try dbQueue2.write { db in
+                try item.delete(db)
+            }
+        } catch {
+            print("Ошибка при удалении WardrobeItem: \(error)")
+        }
+    }
+
+
+
+
 
 }

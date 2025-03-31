@@ -1,5 +1,7 @@
 import Foundation
 import GRDB
+import UIKit
+
 
 struct Product: FetchableRecord, Decodable, Identifiable {
     let id: Int
@@ -60,4 +62,71 @@ struct ColorTypeResponse: Codable {
     let avoid_colors: [String]
 }
 
+struct WardrobeImageItem: Identifiable, Hashable {
+    let id = UUID()
+    let image: UIImage
+    let description: String
+}
+
+
+struct WardrobeItem: Codable, FetchableRecord, PersistableRecord, Identifiable, Hashable {
+    var id: Int64?
+    let color: String
+    let type: String
+    let imagePath: String
+    let createdAt: Date
+
+    // ✅ Указываем имя таблицы
+    static let databaseTableName = "wardrobe"
+
+    // ✅ Явно указываем соответствие между свойствами и столбцами
+    enum CodingKeys: String, CodingKey {
+        case id
+        case color
+        case type
+        case imagePath = "image_path"
+        case createdAt = "created_at"
+    }
+
+    // ✅ Получение изображения
+    func getImage() -> UIImage? {
+        let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+            .appendingPathComponent(imagePath)
+        return UIImage(contentsOfFile: url.path)
+    }
+    
+    
+//    func getImage() -> UIImage? {
+//        let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+//        let fileURL = documentsURL.appendingPathComponent(imagePath)
+//        return UIImage(contentsOfFile: fileURL.path)
+//    }
+}
+
+
+
+
+
+//struct WardrobeItem: Codable, FetchableRecord, PersistableRecord {
+//    var id: Int64?
+//    let color: String
+//    let type: String
+//    let imagePath: String
+//    let createdAt: Date
+//    
+//    enum CodingKeys: String, CodingKey {
+//        case id, color, type
+//        case imagePath = "image_path"
+//        case createdAt = "created_at"
+//    }
+//    
+//    func getImage() -> UIImage? {
+//        let documentsURL = FileManager.default.urls(
+//            for: .documentDirectory,
+//            in: .userDomainMask
+//        ).first!
+//        let fileURL = documentsURL.appendingPathComponent(imagePath)
+//        return UIImage(contentsOfFile: fileURL.path)
+//    }
+//}
 
