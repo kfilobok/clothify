@@ -1,5 +1,9 @@
 # preprocessing_function=lambda x: tf.image.resize_with_pad(x, *image_size)
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> df7d4318d55a2569deaee35970a45e83bc5d1223
 import os
 import pandas as pd
 import shutil

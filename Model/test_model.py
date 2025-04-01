@@ -3,6 +3,10 @@ import tensorflow as tf
 import numpy as np
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> df7d4318d55a2569deaee35970a45e83bc5d1223
 class TestFashionClassifier(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
