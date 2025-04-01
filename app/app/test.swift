@@ -87,7 +87,6 @@ struct TestView: View {
                         }
                     }
                 } else {
-                    // Показ вопроса
                     let question = questions[currentQuestionIndex]
                     Text(question.text)
                         .font(.title2)

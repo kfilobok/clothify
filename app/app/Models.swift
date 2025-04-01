@@ -76,10 +76,8 @@ struct WardrobeItem: Codable, FetchableRecord, PersistableRecord, Identifiable, 
     let imagePath: String
     let createdAt: Date
 
-    // ✅ Указываем имя таблицы
     static let databaseTableName = "wardrobe"
 
-    // ✅ Явно указываем соответствие между свойствами и столбцами
     enum CodingKeys: String, CodingKey {
         case id
         case color
@@ -88,45 +86,32 @@ struct WardrobeItem: Codable, FetchableRecord, PersistableRecord, Identifiable, 
         case createdAt = "created_at"
     }
 
-    // ✅ Получение изображения
     func getImage() -> UIImage? {
         let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
             .appendingPathComponent(imagePath)
         return UIImage(contentsOfFile: url.path)
     }
     
-    
-//    func getImage() -> UIImage? {
-//        let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-//        let fileURL = documentsURL.appendingPathComponent(imagePath)
-//        return UIImage(contentsOfFile: fileURL.path)
-//    }
 }
 
 
+struct RecognizeRequest: Codable {
+    let file_data: String
+    let file_name: String
+}
 
+struct DetectedItem: Codable {
+    let type: String
+    let color: String
+    let confidence: Double
+    let x: Int
+    let y: Int
+    let width: Int
+    let height: Int
+}
 
+struct RecognizeResponse: Codable {
+    let detected_items: [DetectedItem]
+}
 
-//struct WardrobeItem: Codable, FetchableRecord, PersistableRecord {
-//    var id: Int64?
-//    let color: String
-//    let type: String
-//    let imagePath: String
-//    let createdAt: Date
-//
-//    enum CodingKeys: String, CodingKey {
-//        case id, color, type
-//        case imagePath = "image_path"
-//        case createdAt = "created_at"
-//    }
-//
-//    func getImage() -> UIImage? {
-//        let documentsURL = FileManager.default.urls(
-//            for: .documentDirectory,
-//            in: .userDomainMask
-//        ).first!
-//        let fileURL = documentsURL.appendingPathComponent(imagePath)
-//        return UIImage(contentsOfFile: fileURL.path)
-//    }
-//}
 

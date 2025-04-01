@@ -1,6 +1,4 @@
-//
-//  APIService.swift
-
+import UIKit
 import Foundation
 
 class APIService {
@@ -259,6 +257,50 @@ class APIService {
                 completion(.success(responseString))
             } else {
                 completion(.failure(NSError(domain: "InvalidResponse", code: 0, userInfo: nil)))
+            }
+        }.resume()
+    }
+
+
+    func recognizeClothing(from image: UIImage, fileName: String = "image.jpg", completion: @escaping (Result<RecognizeResponse, Error>) -> Void) {
+        guard let url = URL(string: "\(baseURL)/api/ml/recognize") else { return }
+
+        guard let imageData = image.jpegData(compressionQuality: 0.8) else {
+            completion(.failure(NSError(domain: "ImageConversion", code: 0, userInfo: nil)))
+            return
+        }
+
+        let base64String = imageData.base64EncodedString()
+        let requestBody = RecognizeRequest(file_data: base64String, file_name: fileName)
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        do {
+            request.httpBody = try JSONEncoder().encode(requestBody)
+        } catch {
+            completion(.failure(error))
+            return
+        }
+
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+
+            guard let data = data else {
+                completion(.failure(NSError(domain: "NoData", code: 0, userInfo: nil)))
+                return
+            }
+
+            do {
+                let result = try JSONDecoder().decode(RecognizeResponse.self, from: data)
+                print(result)
+                completion(.success(result))
+            } catch {
+                completion(.failure(error))
             }
         }.resume()
     }
